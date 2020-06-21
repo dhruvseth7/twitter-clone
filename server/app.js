@@ -61,6 +61,45 @@ app.post("/users/login", (req, res) => {
     })
 })
 
+app.post("/tweets", (req, res) => {
+    const username = req.body.username;
+    const tweetContent = req.body.tweet;
+
+    const newTweet = new Tweet({
+        authorUsername: username,
+        content: tweetContent,
+        createdAt: new Date().toString()
+    })
+
+    newTweet.save().then(res.status(200).json({"message": "Success"}));
+})
+
+
+app.get("/tweets", (req, res) => {
+  Tweet.find({}, (err, tweets) => {
+      if (!err) {
+        res.status(200).json(tweets);
+      } else {
+        res.status(500).json({
+          "error": err.message
+        })
+      }
+  })
+})
+
+app.get("/tweets/:username", (req, res) => {
+    const username = req.params.username;
+    Tweet.find({authorUsername: username}, (err, tweets) => {
+        if (!err) {
+            res.status(200).json(tweets);
+        } else {
+            res.status(500).json({
+              "error": err.message
+            })
+        }
+    })
+})
+
 
 const port = process.env.PORT;
 app.listen(port, function() {
